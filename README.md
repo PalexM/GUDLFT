@@ -43,3 +43,8 @@ Après avoir lancé le serveur, vous pouvez accéder à l'application en ouvrant
 
 ## Contribution
 Les contributions à ce projet sont les bienvenues. N'hésitez pas à proposer des améliorations ou à signaler des problèmes via les issues ou les pull requests sur GitHub.
+
+
+$env:FLASK_ENV = "development"
+$env:FLASK_APP = "server.py"
+flask --app server.py --debug run
