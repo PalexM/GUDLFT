@@ -33,7 +33,9 @@ def showSummary():
     if club:
         return render_template("welcome.html", club=club, competitions=competitions)
     else:
-        error_message = "No secretary find with this email !"
+        error_message = (
+            "No secretary find with this email, try again or contract your club!"
+        )
         return render_template("index.html", error_message=error_message)
 
 
