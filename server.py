@@ -29,9 +29,12 @@ def index():
 
 @app.route("/showSummary", methods=["POST"])
 def showSummary():
-    print("were heeere")
-    club = [club for club in clubs if club["email"] == request.form["email"]][0]
-    return render_template("welcome.html", club=club, competitions=competitions)
+    club = [club for club in clubs if club["email"] == request.form["email"]]
+    if club:
+        return render_template("welcome.html", club=club, competitions=competitions)
+    else:
+        error_message = "No secretary find with this email !"
+        return render_template("index.html", error_message=error_message)
 
 
 @app.route("/book/<competition>/<club>")
@@ -65,3 +68,7 @@ def purchasePlaces():
 @app.route("/logout")
 def logout():
     return redirect(url_for("index"))
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
