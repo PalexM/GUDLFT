@@ -52,17 +52,33 @@ def book(competition, club):
 
 @app.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
-    competition = [c for c in competitions if c["name"] == request.form["competition"]][
-        0
-    ]
-    club = [c for c in clubs if c["name"] == request.form["club"]][0]
+    competition = [c for c in competitions if c["name"] == request.form["competition"]]
+    club = [c for c in clubs if c["name"] == request.form["club"]]
     placesRequired = int(request.form["places"])
-    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
-    flash("Great-booking complete!")
-    return render_template("welcome.html", club=club, competitions=competitions)
+    error_message = None
+    if placesRequired > int(club[0]["points"]):
+        error_message = "You try to book more places than you have available points!"
+    if placesRequired > int(competition[0]["numberOfPlaces"]):
+        error_message = "You try to book more than there are available places!"
+    if placesRequired > 12:
+        error_message = "You can not book more than 12 places!"
+    if placesRequired == 0:
+        error_message = "Please chose a number between 1 and 12!"
 
-
-# TODO: Add route for points display
+    if not error_message:
+        competition[0]["numberOfPlaces"] = (
+            int(competition[0]["numberOfPlaces"]) - placesRequired
+        )
+        club[0]["points"] = int(club[0]["points"]) - placesRequired
+        flash("Great-booking complete!")
+        return render_template("welcome.html", club=club, competitions=competitions)
+    else:
+        return render_template(
+            "welcome.html",
+            club=club,
+            competitions=competitions,
+            error_message=error_message,
+        )
 
 
 @app.route("/logout")
