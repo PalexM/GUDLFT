@@ -83,6 +83,12 @@ def purchasePlaces():
         )
 
 
+@app.route("/dashboard")
+def dashboard():
+    """Home page"""
+    return render_template("dashboard.html", clubs=clubs)
+
+
 @app.route("/logout")
 def logout():
     return redirect(url_for("index"))
