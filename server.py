@@ -33,32 +33,40 @@ def showSummary():
     club = [club for club in clubs if club["email"] == request.form["email"]]
     try:
         club = club.pop()
-    except IndexError:
-        club = None
-        return render_template("index.html", error_message="Something went wrong")
+    except IndexError as e:
+        return render_template(
+            "index.html", error_message=f"Something went wrong : {e}"
+        )
     if club:
         return render_template("welcome.html", club=club, competitions=competitions)
     else:
         error_message = (
-            "No secretary find with this email, try again or contract your club!"
+            "No secretary find with this email, try again or contact your club!"
         )
         return render_template("index.html", error_message=error_message)
 
 
 @app.route("/book/<competition>/<club>")
 def book(competition, club):
-    foundClub = [c for c in clubs if c["name"] == club]
-    foundCompetition = [c for c in competitions if c["name"] == competition]
-    if foundClub and foundCompetition[0]["date"] > str(datetime.now()):
+    found_club = [c for c in clubs if c["name"] == club]
+    found_competition = [c for c in competitions if c["name"] == competition]
+    try:
+        found_club = found_club.pop()
+        found_competition = found_competition.pop()
+    except IndexError as e:
         return render_template(
-            "booking.html", club=foundClub[0], competition=foundCompetition[0]
+            "index.html", error_message=f"Something went wrong : {e}"
+        )
+    if found_club and found_competition["date"] > str(datetime.now()):
+        return render_template(
+            "booking.html", club=found_club, competition=found_competition
         )
     else:
         error_message = "To late, inscriptions are closed !"
         return render_template(
             "welcome.html",
-            club=foundClub[0],
-            competition=foundCompetition[0],
+            club=found_club,
+            competition=found_competition,
             error_message=error_message,
         )
 
@@ -68,10 +76,17 @@ def purchasePlaces():
     competition = [c for c in competitions if c["name"] == request.form["competition"]]
     club = [c for c in clubs if c["name"] == request.form["club"]]
     placesRequired = int(request.form["places"])
+    try:
+        competition = competition.pop()
+        club = club.pop()
+    except IndexError as e:
+        return render_template(
+            "index.html", error_message=f"Something went wrong : {e}"
+        )
     error_message = None
-    if placesRequired > int(club[0]["points"]):
+    if placesRequired > int(club["points"]):
         error_message = "You try to book more places than you have available points!"
-    if placesRequired > int(competition[0]["numberOfPlaces"]):
+    if placesRequired > int(competition["numberOfPlaces"]):
         error_message = "You try to book more than there are available places!"
     if placesRequired > 12:
         error_message = "You can not book more than 12 places!"
@@ -79,19 +94,17 @@ def purchasePlaces():
         error_message = "Please chose a number between 1 and 12!"
 
     if not error_message:
-        competition[0]["numberOfPlaces"] = (
-            int(competition[0]["numberOfPlaces"]) - placesRequired
+        competition["numberOfPlaces"] = (
+            int(competition["numberOfPlaces"]) - placesRequired
         )
-        club[0]["points"] = int(club[0]["points"]) - placesRequired
+        club["points"] = int(club["points"]) - placesRequired
         flash("Great-booking complete!")
-        return render_template(
-            "welcome.html", club=club[0], competitions=competitions[0]
-        )
+        return render_template("welcome.html", club=club, competitions=competitions)
     else:
         return render_template(
             "welcome.html",
-            club=club[0],
-            competitions=competitions[0],
+            club=club,
+            competitions=competitions,
             error_message=error_message,
         )
 
