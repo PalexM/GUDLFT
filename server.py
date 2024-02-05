@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, flash, url_for
 
 
@@ -30,6 +31,11 @@ def index():
 @app.route("/showSummary", methods=["POST"])
 def showSummary():
     club = [club for club in clubs if club["email"] == request.form["email"]]
+    try:
+        club = club.pop()
+    except IndexError:
+        club = None
+        return render_template("index.html", error_message="Something went wrong")
     if club:
         return render_template("welcome.html", club=club, competitions=competitions)
     else:
@@ -41,15 +47,20 @@ def showSummary():
 
 @app.route("/book/<competition>/<club>")
 def book(competition, club):
-    foundClub = [c for c in clubs if c["name"] == club][0]
-    foundCompetition = [c for c in competitions if c["name"] == competition][0]
-    if foundClub and foundCompetition:
+    foundClub = [c for c in clubs if c["name"] == club]
+    foundCompetition = [c for c in competitions if c["name"] == competition]
+    if foundClub and foundCompetition[0]["date"] > str(datetime.now()):
         return render_template(
-            "booking.html", club=foundClub, competition=foundCompetition
+            "booking.html", club=foundClub[0], competition=foundCompetition[0]
         )
     else:
-        flash("Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        error_message = "To late, inscriptions are closed !"
+        return render_template(
+            "welcome.html",
+            club=foundClub[0],
+            competition=foundCompetition[0],
+            error_message=error_message,
+        )
 
 
 @app.route("/purchasePlaces", methods=["POST"])
@@ -73,12 +84,14 @@ def purchasePlaces():
         )
         club[0]["points"] = int(club[0]["points"]) - placesRequired
         flash("Great-booking complete!")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template(
+            "welcome.html", club=club[0], competitions=competitions[0]
+        )
     else:
         return render_template(
             "welcome.html",
-            club=club,
-            competitions=competitions,
+            club=club[0],
+            competitions=competitions[0],
             error_message=error_message,
         )
 
