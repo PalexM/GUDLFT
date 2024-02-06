@@ -3,23 +3,25 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, flash, url_for
 
 
-def loadClubs():
+def load_clubs():
+    """Load clubs from clubs.json file"""
     with open("clubs.json") as c:
-        listOfClubs = json.load(c)["clubs"]
-        return listOfClubs
+        clubs_list = json.load(c)["clubs"]
+        return clubs_list
 
 
-def loadCompetitions():
+def load_competitions():
+    """Load competitions from competitions.json file"""
     with open("competitions.json") as comps:
-        listOfCompetitions = json.load(comps)["competitions"]
-        return listOfCompetitions
+        competitions_list = json.load(comps)["competitions"]
+        return competitions_list
 
 
 app = Flask(__name__)
 app.secret_key = "something_special"
 
-competitions = loadCompetitions()
-clubs = loadClubs()
+competitions = load_competitions()
+clubs = load_clubs()
 
 
 @app.route("/")
@@ -30,6 +32,7 @@ def index():
 
 @app.route("/showSummary", methods=["POST"])
 def showSummary():
+    """Competitions summary"""
     club = [club for club in clubs if club["email"] == request.form["email"]]
     try:
         club = club.pop()
@@ -48,6 +51,7 @@ def showSummary():
 
 @app.route("/book/<competition>/<club>")
 def book(competition, club):
+    """Booking competitions page"""
     found_club = [c for c in clubs if c["name"] == club]
     found_competition = [c for c in competitions if c["name"] == competition]
     try:
@@ -73,9 +77,10 @@ def book(competition, club):
 
 @app.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
+    """Purchaise booked places"""
     competition = [c for c in competitions if c["name"] == request.form["competition"]]
     club = [c for c in clubs if c["name"] == request.form["club"]]
-    placesRequired = int(request.form["places"])
+    places_required = int(request.form["places"])
     try:
         competition = competition.pop()
         club = club.pop()
@@ -84,24 +89,24 @@ def purchasePlaces():
             "index.html", error_message=f"Error : Something went wrong : {e}"
         )
     error_message = None
-    if placesRequired > int(club["points"]):
+    if places_required > int(club["points"]):
         error_message = (
             "Error : You try to book more places than you have available points!"
         )
-    if placesRequired > int(competition["numberOfPlaces"]):
+    if places_required > int(competition["numberOfPlaces"]):
         error_message = (
             "Surbooking Error : You try to book more than there are available places!"
         )
-    if placesRequired > 12:
+    if places_required > 12:
         error_message = "Surbooking Error : You can not book more than 12 places!"
-    if placesRequired == 0:
+    if places_required == 0 or places_required == "":
         error_message = "Choice Error : Please chose a number between 1 and 12!"
 
     if not error_message:
         competition["numberOfPlaces"] = (
-            int(competition["numberOfPlaces"]) - placesRequired
+            int(competition["numberOfPlaces"]) - places_required
         )
-        club["points"] = int(club["points"]) - placesRequired
+        club["points"] = int(club["points"]) - places_required
         flash("Great-booking complete!")
         return render_template("welcome.html", club=club, competitions=competitions)
     else:
@@ -115,12 +120,13 @@ def purchasePlaces():
 
 @app.route("/dashboard")
 def dashboard():
-    """Home page"""
+    """Clubs points dashboard"""
     return render_template("dashboard.html", clubs=clubs)
 
 
 @app.route("/logout")
 def logout():
+    """Logout route"""
     return redirect(url_for("index"))
 
 
