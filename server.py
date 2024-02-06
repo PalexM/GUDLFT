@@ -81,17 +81,21 @@ def purchasePlaces():
         club = club.pop()
     except IndexError as e:
         return render_template(
-            "index.html", error_message=f"Something went wrong : {e}"
+            "index.html", error_message=f"Error : Something went wrong : {e}"
         )
     error_message = None
     if placesRequired > int(club["points"]):
-        error_message = "You try to book more places than you have available points!"
+        error_message = (
+            "Error : You try to book more places than you have available points!"
+        )
     if placesRequired > int(competition["numberOfPlaces"]):
-        error_message = "You try to book more than there are available places!"
+        error_message = (
+            "Surbooking Error : You try to book more than there are available places!"
+        )
     if placesRequired > 12:
-        error_message = "You can not book more than 12 places!"
+        error_message = "Surbooking Error : You can not book more than 12 places!"
     if placesRequired == 0:
-        error_message = "Please chose a number between 1 and 12!"
+        error_message = "Choice Error : Please chose a number between 1 and 12!"
 
     if not error_message:
         competition["numberOfPlaces"] = (
