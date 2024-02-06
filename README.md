@@ -9,7 +9,7 @@ Organisateur des compétitions pour les clubs locaux
 
 1. **Cloner le dépôt**
 ```bash
-git clone https://github.com/PalexM/softdesk.git)https://github.com/PalexM/softdesk.git
+git clone https://github.com/PalexM/GUDLFT.git
 cd softdesk
 ```
 2. **Créer et activer un environnement virtuel** :
@@ -28,23 +28,16 @@ cd softdesk
  ```
 pip install -r requirements.txt
  ```
-4. **Initialiser la base de données** :
- ```
-python manage.py migrate
- ```
 
 5. **Lancer le serveur** :
  ```
-python manage.py runserver 8000
- ```
-
-## Utilisation
-Après avoir lancé le serveur, vous pouvez accéder à l'application en ouvrant votre navigateur et en allant à l'adresse `http://localhost:8000`.
-
-## Contribution
-Les contributions à ce projet sont les bienvenues. N'hésitez pas à proposer des améliorations ou à signaler des problèmes via les issues ou les pull requests sur GitHub.
-
-
 $env:FLASK_ENV = "development"
 $env:FLASK_APP = "server.py"
 flask --app server.py --debug run
+ ```
+
+## Utilisation
+Après avoir lancé le serveur, vous pouvez accéder à l'application en ouvrant votre navigateur et en allant à l'adresse `http://localhost:5000`.
+
+## Contribution
+Les contributions à ce projet sont les bienvenues. N'hésitez pas à proposer des améliorations ou à signaler des problèmes via les issues ou les pull requests sur GitHub.
