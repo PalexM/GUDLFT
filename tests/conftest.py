@@ -4,6 +4,9 @@ from flask import Flask
 import os
 import tempfile
 import json
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from server import app
 

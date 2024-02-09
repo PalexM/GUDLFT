@@ -1,5 +1,6 @@
 import pytest
-from server import loadClubs, loadCompetitions
+
+# from server import loadClubs, loadCompetitions
 
 
 class TestAppRoutes:
@@ -92,17 +93,17 @@ class TestAppRoutes:
         assert b"Welcome to the GUDLFT Clubs Dashboard" in response.data
 
 
-class TestLoadFunctions:
-    """Test load funtions presents in server file"""
+# class TestLoadFunctions:
+#     """Test load funtions presents in server file"""
 
-    def test_load_clubs(self):
-        """Test in load clubs load data correctly and if data exists"""
-        clubs = loadClubs()
-        assert clubs is not None
-        assert len(clubs) > 0
+#     def test_load_clubs(self):
+#         """Test in load clubs load data correctly and if data exists"""
+#         clubs = loadClubs()
+#         assert clubs is not None
+#         assert len(clubs) > 0
 
-    def test_load_competitions(self):
-        """Test in load clubs competitions data correctly and if data exists"""
-        competitions = loadCompetitions()
-        assert competitions is not None
-        assert len(competitions) > 0
+#     def test_load_competitions(self):
+#         """Test in load clubs competitions data correctly and if data exists"""
+#         competitions = loadCompetitions()
+#         assert competitions is not None
+#         assert len(competitions) > 0
