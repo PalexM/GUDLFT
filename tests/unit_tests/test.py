@@ -86,6 +86,38 @@ class TestAppRoutes:
         assert response.status_code == 200
         assert b"Choice Error :" in response.data
 
+    def test_purchase_places_error_with_None(self, client):
+        """Testing booking competition with incorect data, trying to book 0 place"""
+        competition_name = "Spring Festival"
+        club_name = "Simply Lift"
+        places_to_purchase = ""
+        response = client.post(
+            "/purchasePlaces",
+            data={
+                "competition": competition_name,
+                "club": club_name,
+                "places": places_to_purchase,
+            },
+        )
+        assert response.status_code == 200
+        assert b"Choice Error :" in response.data
+
+    def test_purchase_places_error_with_negative(self, client):
+        """Testing booking competition with incorect data, trying to book 0 place"""
+        competition_name = "Spring Festival"
+        club_name = "Simply Lift"
+        places_to_purchase = "-3"
+        response = client.post(
+            "/purchasePlaces",
+            data={
+                "competition": competition_name,
+                "club": club_name,
+                "places": places_to_purchase,
+            },
+        )
+        assert response.status_code == 200
+        assert b"Choice Error :" in response.data
+
     def test_dashboard(self, client):
         """Testing dashboard route and dashboard display"""
         response = client.get("/dashboard")
