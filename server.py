@@ -36,9 +36,10 @@ def showSummary():
     club = [club for club in clubs if club["email"] == request.form["email"]]
     try:
         club = club.pop()
-    except IndexError as e:
+    except IndexError:
         return render_template(
-            "index.html", error_message=f"Something went wrong : {e}"
+            "index.html",
+            error_message="No secretary find with this email, try again or contact your club!",
         )
     if club:
         return render_template("welcome.html", club=club, competitions=competitions)
