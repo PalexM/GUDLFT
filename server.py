@@ -80,9 +80,8 @@ def purchasePlaces():
     """Purchaise booked places"""
     competition = [c for c in competitions if c["name"] == request.form["competition"]]
     club = [c for c in clubs if c["name"] == request.form["club"]]
-    places_required = (
-        int(request.form["places"]) if request.form["places"] is not "" else 0
-    )
+    places_required = int(request.form["places"]) if request.form["places"] != "" else 0
+    print(places_required)
     try:
         competition = competition.pop()
         club = club.pop()
@@ -101,7 +100,7 @@ def purchasePlaces():
         )
     elif places_required > 12:
         error_message = "Surbooking Error : You can not book more than 12 places!"
-    else:
+    elif places_required <= 0:
         error_message = "Choice Error : Please chose a number between 1 and 12!"
 
     if not error_message:
