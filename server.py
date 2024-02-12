@@ -91,9 +91,7 @@ def purchasePlaces():
         )
     error_message = None
     if places_required > int(club["points"]):
-        error_message = (
-            "Error : You try to book more places than you have available points!"
-        )
+        error_message = "Surbooking Error : You try to book more places than you have available points!"
     elif places_required > int(competition["numberOfPlaces"]):
         error_message = (
             "Surbooking Error : You try to book more than there are available places!"
