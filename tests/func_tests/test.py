@@ -125,7 +125,29 @@ class TestAppRoutes:
         assert b"Welcome to the GUDLFT Clubs Dashboard" in response.data
 
     def test_404_page(self, client):
-        """Testing dashboard route and dashboard display"""
+        """Testing 404 pages"""
         response = client.get("/dasboard")  # misspleling dashboard
         assert response.status_code == 404
         assert b"Not Found" in response.data
+
+    def test_logout(self, client):
+        """Testing logout"""
+        response = client.get("/logout", follow_redirects=True)
+        assert response.status_code == 200
+        assert b"Welcome to the GUDLFT" in response.data
+
+
+class TestLoadFunctions:
+    """Test load funtions presents in server file"""
+
+    def test_load_clubs(self):
+        """Test in load clubs load data correctly and if data exists"""
+        clubs = load_clubs()
+        assert clubs is not None
+        assert len(clubs) > 0
+
+    def test_load_competitions(self):
+        """Test in load clubs competitions data correctly and if data exists"""
+        competitions = load_competitions()
+        assert competitions is not None
+        assert len(competitions) > 0
