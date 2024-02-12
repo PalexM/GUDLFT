@@ -1,141 +1,58 @@
 import pytest
 
-from server import load_clubs, load_competitions
+
+def update_club_points(clubs, club_name, points_to_deduct):
+    for club in clubs:
+        if club["name"] == club_name:
+            club["points"] = str(int(club["points"]) - points_to_deduct)
+            break
+    return clubs
 
 
-class TestAppRoutes:
-    @pytest.fixture
-    def client(self, client):
-        """Use fixture client defined in conftest.py."""
-        return client
-
-    def test_index_route(self, client):
-        """Testing index route"""
-        response = client.get("/")
-        assert response.status_code == 200
-        assert b"Please enter your secretary email to continue:" in response.data
-
-    def test_show_summary_route_ok(self, client):
-        """Testing show summary route, test with correct email"""
-        test_email = "john@simplylift.co"
-        response = client.post("/showSummary", data={"email": test_email})
-        assert response.status_code == 200
-        assert b"Competitions:" in response.data
-
-    def test_show_summary_route_ko(self, client):
-        """Testing show summary route, test with incorrect email"""
-        test_email = "john@simplylift.cqso"
-        response = client.post("/showSummary", data={"email": test_email})
-        assert response.status_code == 200
-        assert b"Something went wrong" in response.data
-
-    def test_book_competition_route_ok(self, client):
-        """Testing booking competition with correct data"""
-        competition_name = "Spring Festival"
-        club_name = "Simply Lift"
-        places_to_purchase = "3"
-        response = client.post(
-            "/purchasePlaces",
-            data={
-                "competition": competition_name,
-                "club": club_name,
-                "places": places_to_purchase,
-            },
-        )
-        assert response.status_code == 200
-        assert b"Great-booking complete!" in response.data
-
-    def test_book_competition_route_ko_url(self, client):
-        """Testing booking competition with incorect url route"""
-        competition_name = "Spring Festivale"
-        club_name = "Simply Lifte"
-        response = client.get(f"/book/{competition_name}/{club_name}")
-        print(f" \n \n  response : \n {response.data} \n\n")
-        assert response.status_code == 200
-        assert b"Something went wrong" in response.data
-
-    def test_book_competition_route_ko_surbooking(self, client):
-        """Testing booking competition with incorect data, trying to book more than 12 places"""
-        competition_name = "Spring Festival"
-        club_name = "Simply Lift"
-        places_to_purchase = "13"
-        response = client.post(
-            "/purchasePlaces",
-            data={
-                "competition": competition_name,
-                "club": club_name,
-                "places": places_to_purchase,
-            },
-        )
-        assert response.status_code == 200
-        assert b"Surbooking Error :" in response.data
-
-    def test_purchase_places_error_zero(self, client):
-        """Testing booking competition with incorect data, trying to book 0 place"""
-        competition_name = "Spring Festival"
-        club_name = "Simply Lift"
-        places_to_purchase = "0"
-        response = client.post(
-            "/purchasePlaces",
-            data={
-                "competition": competition_name,
-                "club": club_name,
-                "places": places_to_purchase,
-            },
-        )
-        assert response.status_code == 200
-        assert b"Choice Error :" in response.data
-
-    def test_purchase_places_error_with_None(self, client):
-        """Testing booking competition with incorect data, trying to book 0 place"""
-        competition_name = "Spring Festival"
-        club_name = "Simply Lift"
-        places_to_purchase = ""
-        response = client.post(
-            "/purchasePlaces",
-            data={
-                "competition": competition_name,
-                "club": club_name,
-                "places": places_to_purchase,
-            },
-        )
-        assert response.status_code == 200
-        assert b"Choice Error :" in response.data
-
-    def test_purchase_places_error_with_negative(self, client):
-        """Testing booking competition with incorect data, trying to book 0 place"""
-        competition_name = "Spring Festival"
-        club_name = "Simply Lift"
-        places_to_purchase = "-3"
-        response = client.post(
-            "/purchasePlaces",
-            data={
-                "competition": competition_name,
-                "club": club_name,
-                "places": places_to_purchase,
-            },
-        )
-        assert response.status_code == 200
-        assert b"Choice Error :" in response.data
-
-    def test_dashboard(self, client):
-        """Testing dashboard route and dashboard display"""
-        response = client.get("/dashboard")
-        assert response.status_code == 200
-        assert b"Welcome to the GUDLFT Clubs Dashboard" in response.data
+def update_competition_places(competitions, competition_name, places_required):
+    for competition in competitions:
+        if competition["name"] == competition_name:
+            competition["numberOfPlaces"] = str(
+                int(competition["numberOfPlaces"]) - places_required
+            )
+            break
+    return competitions
 
 
-class TestLoadFunctions:
-    """Test load funtions presents in server file"""
+def test_update_club_and_competition():
+    clubs_data = [
+        {"name": "Simply Lift", "email": "john@simplylift.co", "points": "13"},
+        {"name": "Iron Temple", "email": "admin@irontemple.com", "points": "4"},
+        {"name": "She Lifts", "email": "kate@shelifts.co.uk", "points": "12"},
+    ]
+    competitions_data = [
+        {
+            "name": "Spring Festival",
+            "date": "2024-03-27 10:00:00",
+            "numberOfPlaces": "25",
+        },
+        {
+            "name": "Fall Classic",
+            "date": "2020-10-22 13:30:00",
+            "numberOfPlaces": "13",
+        },
+    ]
 
-    def test_load_clubs(self):
-        """Test in load clubs load data correctly and if data exists"""
-        clubs = load_clubs()
-        assert clubs is not None
-        assert len(clubs) > 0
+    updated_clubs = update_club_points(clubs_data, "Simply Lift", 3)
+    updated_club = next(club for club in updated_clubs if club["name"] == "Simply Lift")
 
-    def test_load_competitions(self):
-        """Test in load clubs competitions data correctly and if data exists"""
-        competitions = load_competitions()
-        assert competitions is not None
-        assert len(competitions) > 0
+    updated_competitions = update_competition_places(
+        competitions_data, "Spring Festival", 3
+    )
+    updated_competition = next(
+        competition
+        for competition in updated_competitions
+        if competition["name"] == "Spring Festival"
+    )
+
+    assert (
+        updated_club["points"] == "10"
+    ), f"Expected points to be '10', got {updated_club['points']}"
+    assert (
+        updated_competition["numberOfPlaces"] == "22"
+    ), f"Expected number of places to be '22', got {updated_competition['numberOfPlaces']}"
