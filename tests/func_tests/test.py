@@ -27,7 +27,7 @@ class TestAppRoutes:
         test_email = "john@simplylift.cqso"
         response = client.post("/showSummary", data={"email": test_email})
         assert response.status_code == 200
-        assert b"Something went wrong" in response.data
+        assert b"No secretary find" in response.data
 
     def test_book_competition_route_ok(self, client):
         """Testing booking competition with correct data"""
